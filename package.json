@@ -1,0 +1,37 @@
+{
+  "name": "libre-link-up-diabetic-monitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src\\index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f1lrotto/libre-link-up-diabetic-monitor.git"
+  },
+  "author": "Filip Hupka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/f1lrotto/libre-link-up-diabetic-monitor/issues"
+  },
+  "homepage": "https://github.com/f1lrotto/libre-link-up-diabetic-monitor#readme",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "body-parser": "^1.20.2",
+    "chart.js": "^4.4.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
+    "mongodb": "^6.2.0",
+    "mongoose": "^8.0.0",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0"
+  }
+}
