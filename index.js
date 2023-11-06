@@ -1,10 +1,10 @@
 const express = require('express');
 require('dotenv').config();
 
-const { connectMongo } = require('./common/mongoConnect');
-const { setCronjobs } = require('./controller/cron_controller');
+const { connectMongo } = require('./src/common/mongoConnect');
+const { setCronjobs } = require('./src/controller/cron_controller');
 
-const webRouter = require('./router/webRouter');
+const webRouter = require('./src/router/webRouter');
 // const watchRouter = require('./router/watchRouter');
 
 const app = express();
