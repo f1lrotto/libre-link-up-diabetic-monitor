@@ -39,4 +39,22 @@ router.get('/logout', (req, res) => {
   });
 });
 
+router.get('/validate-session', (req, res) => {
+  if (req.isAuthenticated()) {
+    // If the user is authenticated, return some user details
+    // Adjust the returned user details as per your requirements
+    res.json({
+      authenticated: true,
+      user: {
+        id: req.user.id,
+        name: req.user.displayName,
+        email: req.user.emails[0].value,
+      },
+    });
+  } else {
+    // If the user is not authenticated
+    res.json({ authenticated: false });
+  }
+});
+
 module.exports = router;
