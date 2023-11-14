@@ -120,7 +120,7 @@ app.get('/validate-session', (req, res) => {
   }
 });
 
-app.use('/web-api', isAuthenticated, webRouter);
+app.use('/web-api', webRouter);
 
 app.listen(port, async () => {
   console.info(`Server listening at http://localhost:${port}`);
