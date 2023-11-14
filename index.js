@@ -15,7 +15,6 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-console.log(passport);
 app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
