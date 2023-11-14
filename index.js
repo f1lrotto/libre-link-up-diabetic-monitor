@@ -32,7 +32,7 @@ connectMongo();
 
 const allowedEmails = process.env.ALLOWED_EMAILS.split(',');
 
-function isValid(req, res, next) {
+function checkAuthentication(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
@@ -131,7 +131,7 @@ app.get('/unauthorized', (req, res) => {
 });
 
 
-app.use('/web-api', isValid(), webRouter);
+app.use('/web-api', checkAuthentication, webRouter);
 
 app.listen(port, async () => {
   console.info(`Server listening at http://localhost:${port}`);
