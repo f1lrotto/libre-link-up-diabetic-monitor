@@ -103,6 +103,11 @@ app.get(
   },
 );
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.send('Logged out');
+});
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
