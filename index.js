@@ -16,10 +16,10 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors(corsOptions));
-app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors(corsOptions));
+app.use(session(sessionOptions));
 
 connectMongo();
 setCronjobs();
