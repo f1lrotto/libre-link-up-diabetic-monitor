@@ -18,7 +18,14 @@ const webRouter = require('./src/router/webRouter');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://cgm.filiphupka.com', // Replace with your frontend's URL
+  credentials: true, // This is important for sending cookies or headers with fetch
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+};
+
+app.use(cors(corsOptions));
 
 console.info('Connecting to MongoDB...');
 connectMongo();
