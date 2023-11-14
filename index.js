@@ -83,10 +83,10 @@ app.get(
 
 app.get(
   '/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: 'cgm.filiphupka.com' }),
+  passport.authenticate('google', { failureRedirect: 'http://cgm.filiphupka.com' }),
   (req, res) => {
     // Successful authentication, redirect home.
-    res.redirect('cgm.filiphupka.com');
+    res.redirect('http://cgm.filiphupka.com');
   },
 );
 
