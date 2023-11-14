@@ -8,6 +8,7 @@ const corsOptions = require('./src/config/corsOptions');
 const sessionOptions = require('./src/config/sessionOptions');
 const authRoutes = require('./src/routes/authRoutes');
 const webRoutes = require('./src/routes/webRoutes');
+const checkAuthentication = require('./src/middleware/authMiddleware');
 const { connectMongo } = require('./src/common/mongoConnect');
 const { setCronjobs } = require('./src/controller/cron_controller');
 
@@ -24,7 +25,7 @@ connectMongo();
 setCronjobs();
 
 app.use(authRoutes);
-app.use('/web-api', webRoutes);
+app.use('/web-api', checkAuthentication, webRoutes);
 
 app.listen(port, () => {
   console.info('Server listening');
