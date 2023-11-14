@@ -12,7 +12,7 @@ module.exports = function(passport) {
       done(null, profile);
     },
   ));
-  console.log('vars: ', process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_CALLBACK_URL);
+
   passport.serializeUser((user, done) => {
     done(null, user);
   });
