@@ -104,8 +104,15 @@ app.get(
 );
 
 app.get('/logout', (req, res) => {
-  req.logout();
-  res.send('Logged out');
+  req.logout((err) => {
+    if (err) {
+      console.error('Logout error: ', err);
+      return res.status(500).send('Error during logout');
+    }
+    req.session.destroy(); // Destroy the session after logout
+    res.clearCookie('connect.sid'); // Clear the session cookie
+    return res.send('Logged out');
+  });
 });
 
 
