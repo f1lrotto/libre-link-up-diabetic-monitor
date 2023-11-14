@@ -1,6 +1,7 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-module.exports = (passport) => {
+// eslint-disable-next-line space-before-function-paren, func-names
+module.exports = function(passport) {
   passport.use(new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
