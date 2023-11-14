@@ -113,19 +113,6 @@ app.get('/validate-session', (req, res) => {
   }
 });
 
-// Middleware to check for bearer token on all routes
-// app.use((req, res, next) => {
-//   const authHeader = req.headers.authorization;
-//   if (!authHeader) {
-//     return res.status(401).json({ error: 'Missing bearer token' });
-//   }
-//   const token = authHeader.split(' ')[1];
-//   if (token !== process.env.BEARER_TOKEN) {
-//     return res.status(401).json({ error: 'Invalid bearer token' });
-//   }
-//   return next();
-// });
-
 app.use('/web-api', isAuthenticated, webRouter);
 
 app.listen(port, async () => {
