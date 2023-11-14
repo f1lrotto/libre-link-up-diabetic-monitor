@@ -39,7 +39,7 @@ class LibreClient {
       glucoseMG: obj.ValueInMgPerDl,
       isLow: obj.isLow,
       isHigh: obj.isHigh,
-      timestamp: moment(obj.Timestamp, 'MM/DD/YYYY h:mm:ss A').add(1, 'hours'),
+      timestamp: moment(obj.Timestamp, 'MM/DD/YYYY h:mm:ss A'),
       trendNumber: trendIncluded ? obj.TrendArrow : null,
       trend: trendIncluded ? this.glucseTrendMap[obj.TrendArrow] : null,
     });
