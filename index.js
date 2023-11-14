@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 
 const { connectMongo } = require('./src/common/mongoConnect');
@@ -19,6 +20,21 @@ if (process.env.CRON_ENABLED === 'true') {
 } else {
   console.info('Cronjobs set to: ', process.env.CRON_ENABLED);
 }
+
+app.use(cors());
+
+// Middleware to check for bearer token on all routes
+app.use((req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ error: 'Missing bearer token' });
+  }
+  const token = authHeader.split(' ')[1];
+  if (token !== process.env.BEARER_TOKEN) {
+    return res.status(401).json({ error: 'Invalid bearer token' });
+  }
+  return next();
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
