@@ -3,7 +3,7 @@ const session = require('express-session');
 const cors = require('cors');
 const passport = require('passport');
 
-require('./src/config/passport'); // Passport configuration
+require('./src/config/passport')(passport);
 const corsOptions = require('./src/config/corsOptions');
 const sessionOptions = require('./src/config/sessionOptions');
 const authRoutes = require('./src/routes/authRoutes');
