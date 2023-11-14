@@ -18,6 +18,8 @@ const webRouter = require('./src/router/webRouter');
 const app = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors());
+
 console.info('Connecting to MongoDB...');
 connectMongo();
 
@@ -73,8 +75,6 @@ passport.deserializeUser((id, done) => {
   done(null, id);
 });
 
-
-app.use(cors());
 
 app.get(
   '/auth/google',
