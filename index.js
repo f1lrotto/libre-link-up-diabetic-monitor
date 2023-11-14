@@ -30,6 +30,8 @@ app.use(cors(corsOptions));
 console.info('Connecting to MongoDB...');
 connectMongo();
 
+const allowedEmails = process.env.ALLOWED_EMAILS.split(',');
+
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -67,12 +69,16 @@ passport.use(new GoogleStrategy(
     callbackURL: 'http://cgm.backend.filiphupka.com/auth/google/callback',
   },
   (accessToken, refreshToken, profile, done) => {
-    // This function will be called when the user has authenticated with Google.
-    // You can use the `profile` object to create or update a user in your database.
-    // The `done` function should be called with the user object when you're done.
-    done(null, profile);
+    // Check if the user's email is in the list of allowed emails
+    const userEmail = profile.emails[0].value; // Assuming the first email is the primary one
+    if (allowedEmails.includes(userEmail)) {
+      done(null, profile);
+    } else {
+      done(null, false); // User not allowed
+    }
   },
 ));
+
 
 // Serialize and deserialize user instances to and from the session.
 passport.serializeUser((user, done) => {
@@ -90,7 +96,7 @@ app.get(
 
 app.get(
   '/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: 'http://cgm.filiphupka.com' }),
+  passport.authenticate('google', { failureRedirect: 'http://cgm.backend.filiphupka.com/unauthorized' }),
   (req, res) => {
     // Successful authentication, redirect home.
     res.redirect('http://cgm.filiphupka.com');
@@ -119,6 +125,11 @@ app.get('/validate-session', (req, res) => {
     res.json({ authenticated: false });
   }
 });
+
+app.get('/unauthorized', (req, res) => {
+  res.send('You are not authorized to access this application.');
+});
+
 
 app.use('/web-api', webRouter);
 
