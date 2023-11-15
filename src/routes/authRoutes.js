@@ -15,6 +15,7 @@ router.get(
   passport.authenticate('google', { failureRedirect: '/unauthorized' }),
   (req, res) => {
     // Successful authentication, redirect to your desired page
+    console.info('Successful authentication, redirecting to: ', process.env.FONTEND_BASE_URL);
     res.redirect(process.env.FONTEND_BASE_URL);
   },
 );

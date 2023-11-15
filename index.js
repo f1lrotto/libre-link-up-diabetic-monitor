@@ -3,6 +3,7 @@ const session = require('express-session');
 const cors = require('cors');
 const passport = require('passport');
 
+require('dotenv').config();
 require('./src/config/passport')(passport);
 const corsOptions = require('./src/config/corsOptions');
 const sessionOptions = require('./src/config/sessionOptions');
@@ -12,7 +13,6 @@ const checkAuthentication = require('./src/middleware/authMiddleware');
 const { connectMongo } = require('./src/common/mongoConnect');
 const { setCronjobs } = require('./src/controller/cron_controller');
 
-require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,7 +22,7 @@ app.use(passport.session());
 app.use(cors(corsOptions));
 
 connectMongo();
-setCronjobs();
+setCronjobs(process.env.CRON_ENABLED);
 
 app.use(authRoutes);
 app.use('/web-api', checkAuthentication, webRoutes);

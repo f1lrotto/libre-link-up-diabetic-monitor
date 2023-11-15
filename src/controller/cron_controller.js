@@ -2,7 +2,11 @@ const cron = require('node-cron');
 
 const libreController = require('./libreController');
 
-const setCronjobs = () => {
+const setCronjobs = (CRON_ENABLED) => {
+  if (CRON_ENABLED === 'false') {
+    console.info('Cronjobs disabled.');
+    return;
+  }
   cron.schedule('*/1 * * * *', () => {
     console.info('Running cronjob to save latest reading...');
     libreController.saveLatestReading();
