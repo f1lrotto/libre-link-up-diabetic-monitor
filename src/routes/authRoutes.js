@@ -15,7 +15,7 @@ router.get(
   passport.authenticate('google', { failureRedirect: '/unauthorized' }),
   (req, res) => {
     // Successful authentication, redirect to your desired page
-    res.redirect('http://cgm.filiphupka.com');
+    res.redirect(process.env.FONTEND_BASE_URL);
   },
 );
 
