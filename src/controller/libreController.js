@@ -43,6 +43,11 @@ const getReadingLatestWeb = async (req, res) => {
   res.send(latestReading);
 };
 
+const getReadings6HoursWeb = async (req, res) => {
+  const readings = await getReadingsXHours(6);
+  res.send(readings);
+};
+
 const getReadings12HoursWeb = async (req, res) => {
   const readings = await getReadingsXHours(12);
   res.send(readings);
@@ -87,6 +92,7 @@ module.exports = {
 
   // web
   getReadingLatestWeb,
+  getReadings6HoursWeb,
   getReadings12HoursWeb,
   getReadings24HoursWeb,
   getReadingsWeekWeb,
