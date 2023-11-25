@@ -94,15 +94,14 @@ const getMealsThreeMonths = async (req, res) => {
 };
 
 const updateMealPostGlucose = async () => {
-  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
-  const momentTwoHoursAgo = moment(twoHoursAgo).format('YYYY-MM-DD HH:mm:ss');
+  const twoHoursAgo = moment.tz('Europe/Amsterdam').subtract(2, 'hours');
 
   const meals = await Meal.find({
-    mealTime: { $lte: momentTwoHoursAgo },
+    mealTime: { $lte: twoHoursAgo },
     postMealPresent: false,
   });
   console.log('updateMealPostGlucose - meals found: ', meals);
-  console.log('updateMealPostGlucose - time to past 2h: ', momentTwoHoursAgo);
+  console.log('updateMealPostGlucose - time to past 2h: ', twoHoursAgo);
 
   meals.forEach(async (meal) => {
     const latestReading = await client.getLastReading();
