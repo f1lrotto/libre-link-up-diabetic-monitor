@@ -1,5 +1,8 @@
+const moment = require('moment-timezone');
+
 const client = require('../common/libreConnect');
 const Reading = require('../models/reading');
+const Meal = require('../models/meal');
 
 // SAVING DATA TO MONGODB
 const saveLatestReading = async () => {
@@ -22,11 +25,6 @@ const saveBackupData = async () => {
   return 0;
 };
 
-// GETTING DATA FROM MONGODB
-const getReadingLatest = async () => {
-  const latestReading = await Reading.findOne().sort({ timestamp: -1 });
-  return latestReading;
-};
 
 const getReadingsXHours = async (hours) => {
   const readings = await Reading.find({
@@ -38,64 +36,108 @@ const getReadingsXHours = async (hours) => {
 };
 
 // WEB API Wrappers
-const getReadingLatestWeb = async (req, res) => {
-  const latestReading = await getReadingLatest();
+const getReadingLatest = async (req, res) => {
+  const latestReading = await Reading.findOne().sort({ timestamp: -1 });
   res.send(latestReading);
 };
 
-const getReadings6HoursWeb = async (req, res) => {
+const getReadings6Hours = async (req, res) => {
   const readings = await getReadingsXHours(6);
   res.send(readings);
 };
 
-const getReadings12HoursWeb = async (req, res) => {
+const getReadings12Hours = async (req, res) => {
   const readings = await getReadingsXHours(12);
   res.send(readings);
 };
 
-const getReadings24HoursWeb = async (req, res) => {
+const getReadings24Hours = async (req, res) => {
   const readings = await getReadingsXHours(24);
   res.send(readings);
 };
 
-const getReadingsWeekWeb = async (req, res) => {
+const getReadingsWeek = async (req, res) => {
   const readings = await getReadingsXHours(24 * 7);
   res.send(readings);
 };
 
+const logMeal = async (req, res) => {
+  const { mealType, mealTime, currentGlucose: preMealGlucoseMMOL } = req.body;
+  const reading = await Meal.create({ mealType, mealTime: moment(mealTime), preMealGlucoseMMOL });
+  res.send(reading);
+};
+
+const deleteMeal = async (req, res) => {
+  const { id } = req.params;
+  const reading = await Meal.findByIdAndDelete(id);
+  res.send(reading);
+};
+
+const getMealsThreeMonths = async (req, res) => {
+  const meals = await Meal.find({
+    mealTime: {
+      $gte: new Date(new Date() - 90 * 24 * 60 * 60 * 1000),
+    },
+  }).sort({ mealTime: 1 });
+
+  // make the meals an object with the date as the key
+  const mealsObject = {};
+  meals.forEach((meal) => {
+    const date = meal.mealTime.toISOString().split('T')[0];
+    if (!mealsObject[date]) {
+      mealsObject[date] = [];
+    }
+    mealsObject[date].push(meal);
+  });
+  res.send(mealsObject);
+};
+
+const updateMealPostGlucose = async () => {
+  const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const momentTwoHoursAgo = moment(twoHoursAgo).format('YYYY-MM-DD HH:mm:ss');
+
+  const meals = await Meal.find({
+    mealTime: { $lte: momentTwoHoursAgo },
+    postMealPresent: false,
+  });
+
+  meals.forEach(async (meal) => {
+    const latestReading = await client.getLastReading();
+
+    if (latestReading) {
+      // eslint-disable-next-line no-underscore-dangle
+      await Meal.findByIdAndUpdate(meal._id, {
+        postMealGlucoseMMOL: latestReading.glucoseMMOL,
+        postMealTime: latestReading.timestamp,
+        postMealPresent: true,
+      });
+    }
+  });
+};
 
 // SAFETY JOB
 
 // detect if there were no readings in the last hour saved in the database
 // if so, save backup data
-const safetyJob = async () => {
-  const latestReading = await getReadingLatest();
-  const oneHourAgo = new Date(new Date() - 60 * 60 * 1000);
-
-  if (latestReading.timestamp < oneHourAgo) {
-    console.info('No readings in the last hour. Saving backup data...');
-    await saveBackupData();
-  }
-  return 0;
-};
+const safetyJob = async () => 0;
 
 module.exports = {
   // save
   saveLatestReading,
   saveBackupData,
 
-  // get
+  // readings
   getReadingLatest,
-  getReadings12Hours: () => getReadingsXHours(12),
-  getReadings24Hours: () => getReadingsXHours(24),
-  getReadingsWeek: () => getReadingsXHours(24 * 7),
+  getReadings6Hours,
+  getReadings12Hours,
+  getReadings24Hours,
+  getReadingsWeek,
 
-  // web
-  getReadingLatestWeb,
-  getReadings6HoursWeb,
-  getReadings12HoursWeb,
-  getReadings24HoursWeb,
-  getReadingsWeekWeb,
+  // meals
+  logMeal,
+  deleteMeal,
+  getMealsThreeMonths,
+  updateMealPostGlucose,
 
   // safety job
   safetyJob,
