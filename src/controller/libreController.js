@@ -63,6 +63,7 @@ const getReadingsWeek = async (req, res) => {
 
 const logMeal = async (req, res) => {
   const { mealType, mealTime, currentGlucose: preMealGlucoseMMOL } = req.body;
+  console.log('logMeal - req.body: ', req.body);
   const reading = await Meal.create({ mealType, mealTime: moment(mealTime), preMealGlucoseMMOL });
   res.send(reading);
 };
