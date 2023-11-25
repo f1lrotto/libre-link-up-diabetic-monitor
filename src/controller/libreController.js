@@ -100,10 +100,12 @@ const updateMealPostGlucose = async () => {
     mealTime: { $lte: momentTwoHoursAgo },
     postMealPresent: false,
   });
+  console.log('updateMealPostGlucose - meals found: ', meals);
+  console.log('updateMealPostGlucose - time to past 2h: ', momentTwoHoursAgo);
 
   meals.forEach(async (meal) => {
     const latestReading = await client.getLastReading();
-
+    console.log('updateMealPostGlucose - latestReading: ', latestReading);
     if (latestReading) {
       // eslint-disable-next-line no-underscore-dangle
       await Meal.findByIdAndUpdate(meal._id, {
