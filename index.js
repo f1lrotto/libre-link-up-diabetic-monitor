@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const passport = require('passport');
+const bodyParser = require('body-parser');
 
 require('dotenv').config();
 require('./src/config/passport')(passport);
@@ -16,6 +17,7 @@ const { setCronjobs } = require('./src/controller/cron_controller');
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(bodyParser.json());
 app.use(session(sessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
