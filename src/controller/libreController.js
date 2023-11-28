@@ -63,7 +63,6 @@ const getReadingsWeek = async (req, res) => {
 
 const logMeal = async (req, res) => {
   const { mealType, mealTime, currentGlucose: preMealGlucoseMMOL } = req.body;
-  console.log('logMeal - req.body: ', req.body);
   const reading = await Meal.create({ mealType, mealTime: moment(mealTime), preMealGlucoseMMOL });
   res.send(reading);
 };
@@ -79,7 +78,7 @@ const getMealsThreeMonths = async (req, res) => {
     mealTime: {
       $gte: new Date(new Date() - 90 * 24 * 60 * 60 * 1000),
     },
-  }).sort({ mealTime: 1 });
+  }).sort({ mealTime: -1 });
 
   // make the meals an object with the date as the key
   const mealsObject = {};
@@ -94,18 +93,15 @@ const getMealsThreeMonths = async (req, res) => {
 };
 
 const updateMealPostGlucose = async () => {
-  const twoHoursAgo = moment.tz('Europe/Amsterdam').subtract(2, 'hours');
+  const twoHoursAgo = moment().subtract(1, 'hours').utc();
 
   const meals = await Meal.find({
     mealTime: { $lte: twoHoursAgo },
     postMealPresent: false,
   });
-  console.log('updateMealPostGlucose - meals found: ', meals);
-  console.log('updateMealPostGlucose - time to past 2h: ', twoHoursAgo);
 
   meals.forEach(async (meal) => {
-    const latestReading = await client.getLastReading();
-    console.log('updateMealPostGlucose - latestReading: ', latestReading);
+    const latestReading = await Reading.findOne().sort({ timestamp: -1 });
     if (latestReading) {
       // eslint-disable-next-line no-underscore-dangle
       await Meal.findByIdAndUpdate(meal._id, {
