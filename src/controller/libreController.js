@@ -25,7 +25,6 @@ const saveBackupData = async () => {
   return 0;
 };
 
-
 const getReadingsXHours = async (hours) => {
   const readings = await Reading.find({
     timestamp: {
@@ -61,10 +60,38 @@ const getReadingsWeek = async (req, res) => {
   res.send(readings);
 };
 
+const getReadingsDay = async (req, res) => {
+  let { day } = req.body;
+  day = new Date(day);
+  const startDate = new Date(day.setUTCHours(0, 0, 0, 0));
+  const endDate = new Date(day.setUTCHours(23, 59, 59, 999));
+  const readings = await Reading.find({
+    timestamp: {
+      $gte: startDate,
+      $lt: endDate,
+    },
+  }).sort({ timestamp: 1 });
+
+  res.send(readings);
+};
+
 const logMeal = async (req, res) => {
   const { mealType, mealTime, currentGlucose: preMealGlucoseMMOL } = req.body;
   const reading = await Meal.create({ mealType, mealTime: moment(mealTime), preMealGlucoseMMOL });
   res.send(reading);
+};
+
+const editMeal = async (req, res) => {
+  const { id } = req.params;
+  const { meal } = req.body;
+
+  const updatedMeal = await Meal.findByIdAndUpdate(
+    {
+      id,
+    },
+    meal,
+  );
+  res.send(updatedMeal);
 };
 
 const deleteMeal = async (req, res) => {
@@ -130,9 +157,11 @@ module.exports = {
   getReadings12Hours,
   getReadings24Hours,
   getReadingsWeek,
+  getReadingsDay,
 
   // meals
   logMeal,
+  editMeal,
   deleteMeal,
   getMealsThreeMonths,
   updateMealPostGlucose,
