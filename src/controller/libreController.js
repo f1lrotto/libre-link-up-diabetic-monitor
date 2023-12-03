@@ -140,6 +140,52 @@ const updateMealPostGlucose = async () => {
   });
 };
 
+// STATISTICS
+
+const getAverageGlucoseForSpectificMonth = () => {};
+
+const getAverageGlucoseForPeriodWeeks = (req, res) => {
+  const { weeks } = req.body;
+  const weeksAgo = new Date(new Date().getTime() - weeks * 7 * 24 * 60 * 60 * 1000);
+  const readings = Reading.find(
+    {
+      timestamp: { $gte: weeksAgo },
+    },
+  );
+
+  const readingsGroupedHour = readings.reduce(
+    (acc, reading) => {
+      const hour = new Date(reading.timestamp).getHours();
+      if (!acc[hour]) {
+        acc[hour] = { sum: 0, count: 0 };
+      }
+      acc[hour].sum += reading.glucoseMMOL;
+      acc[hour].count += 1;
+      acc.overallAverage.sum += reading.glucoseMMOL;
+      acc.overallAverage.count += 1;
+
+      return acc;
+    },
+    {
+      overallAverage: { sum: 0, count: 0 },
+    },
+  );
+
+  Object.keys(readingsGroupedHour).forEach((hour) => {
+    readingsGroupedHour[hour].res = readingsGroupedHour[hour].sum / readingsGroupedHour[hour].count;
+  });
+
+  readingsGroupedHour.overallAverage.res = readingsGroupedHour.overallAverage.sum
+    / readingsGroupedHour.overallAverage.count;
+
+  res.send(readingsGroupedHour);
+};
+
+const getAverageSpikeAfterMealForSpectificMonth = () => { };
+
+const getAverageSpikeAfterMealForPeriodWeeks = () => {};
+
+
 // SAFETY JOB
 
 // detect if there were no readings in the last hour saved in the database
@@ -165,6 +211,12 @@ module.exports = {
   deleteMeal,
   getMealsThreeMonths,
   updateMealPostGlucose,
+
+  // stats
+  getAverageGlucoseForPeriodWeeks,
+  getAverageGlucoseForSpectificMonth,
+  getAverageSpikeAfterMealForPeriodWeeks,
+  getAverageSpikeAfterMealForSpectificMonth,
 
   // safety job
   safetyJob,
